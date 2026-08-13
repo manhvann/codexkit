@@ -1,7 +1,7 @@
 # Project Overview & Product Development Requirements
 
 **Project Name:** CodexKit  
-**Version:** 0.1.8  
+**Version:** 0.1.9
 **Last Updated:** 2026-08-13  
 **Status:** Public OSS preparation  
 **Repository:** https://github.com/manhvann/codexkit
@@ -68,7 +68,7 @@ runtime.
 - This repository is preparing for its first public GitHub launch.
 - Adoption metrics are not claimed until the repository is public.
 - CI, automated releases, and hosted workflows are not included in version
-  0.1.8.
+  0.1.9.
 - Optional skills may require additional packages or API keys, documented by
   those skills separately.
 

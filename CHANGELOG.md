@@ -4,11 +4,21 @@ All notable changes to CodexKit are documented here.
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-08-13
+
+### Added
+
+- Restored the Codex statusline entrypoint and its integration coverage.
+- Added a supported root `npm test` command with optional dashboard checks.
+
 ### Fixed
 
 - Aligned the package name and installation instructions with the published
   npm scope `@manhnv319/codexkit` while keeping the GitHub source repository at
   `manhvann/codexkit`.
+- Corrected the worktree test compatibility wrapper path.
+- Repaired markdown viewer dashboard test paths and rendering assertions.
+- Added npm package metadata and README-link validation.
 
 ## [0.1.8] - 2026-08-13
 

@@ -1,7 +1,7 @@
 # CodexKit Project Roadmap
 
 **Last Updated:** 2026-08-13  
-**Current Version:** 0.1.8  
+**Current Version:** 0.1.9
 **Repository:** https://github.com/manhvann/codexkit
 
 ## Mission
@@ -10,7 +10,7 @@ Make Codex a dependable maintainer workspace for projects that span multiple
 repositories. CodexKit focuses on repeatable skills, clear agent roles,
 privacy guardrails, plans, documentation, and a predictable installer.
 
-## Current release: 0.1.8
+## Current release: 0.1.9
 
 The current package includes:
 

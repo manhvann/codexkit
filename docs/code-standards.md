@@ -1,7 +1,7 @@
 # Code Standards & Repository Structure
 
 **Last Updated:** 2026-08-13  
-**Version:** 0.1.8  
+**Version:** 0.1.9
 **Applies To:** CodexKit source and release artifacts
 
 ## Principles

@@ -2,7 +2,7 @@
 
 Project-local Codex setup for serious multi-repository workspaces.
 
-Current release: `0.1.8` · License: MIT · Repository: [github.com/manhvann/codexkit](https://github.com/manhvann/codexkit)
+Current release: `0.1.9` · License: MIT · Repository: [github.com/manhvann/codexkit](https://github.com/manhvann/codexkit)
 
 Codex Kit installs a curated Codex workspace layer with skills, agents, hooks,
 workflow rules, helper scripts, plan templates, output styles, and project

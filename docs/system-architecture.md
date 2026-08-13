@@ -1,7 +1,7 @@
 # System Architecture
 
 **Last Updated:** 2026-08-13  
-**Version:** 0.1.8  
+**Version:** 0.1.9
 **Project:** CodexKit
 
 > This document describes the current package layout. Optional skills and
@@ -90,6 +90,6 @@ npm run check
 npm run pack:dry
 ```
 
-No CI workflow or automated release service is part of version 0.1.8. Public
+No CI workflow or automated release service is part of version 0.1.9. Public
 release evidence should come from the GitHub repository, tagged releases,
 package inspection, and reproducible local validation.
