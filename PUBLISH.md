@@ -1,6 +1,6 @@
 # Publish CodexKit to npm
 
-The public package name is `@manhvann/codexkit`; the executable remains `ckit`.
+The public package name is `@manhnv319/codexkit`; the executable remains `ckit`.
 The GitHub repository is <https://github.com/manhvann/codexkit>.
 
 ## Authenticate
@@ -11,7 +11,7 @@ real token or a project `.npmrc`.
 Example user-level `.npmrc`:
 
 ```ini
-@manhvann:registry=https://registry.npmjs.org/
+@manhnv319:registry=https://registry.npmjs.org/
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 ```
 
@@ -26,6 +26,6 @@ npm publish --access public
 ## Install
 
 ```bash
-npm install -g @manhvann/codexkit
+npm install -g @manhnv319/codexkit
 ckit --help
 ```

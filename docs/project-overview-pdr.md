@@ -25,7 +25,7 @@ preserving child-project conventions.
 
 ### Functional
 
-1. Install the kit with `npm install -g @manhvann/codexkit` and run `ckit`.
+1. Install the kit with `npm install -g @manhnv319/codexkit` and run `ckit`.
 2. Support an explicit target directory, dry-run preview, profiles, and
    selected skills/agents/hooks.
 3. Keep source skills under `.agents/skills/` and installed workspace docs under

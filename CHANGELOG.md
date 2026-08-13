@@ -2,6 +2,14 @@
 
 All notable changes to CodexKit are documented here.
 
+## [Unreleased]
+
+### Fixed
+
+- Aligned the package name and installation instructions with the published
+  npm scope `@manhnv319/codexkit` while keeping the GitHub source repository at
+  `manhvann/codexkit`.
+
 ## [0.1.8] - 2026-08-13
 
 ### Added
@@ -14,7 +22,7 @@ All notable changes to CodexKit are documented here.
 
 - Renamed legacy provider references and environment examples to CodexKit.
 - Removed an unused external-provider key placeholder from the environment template.
-- Added public npm metadata for the scoped `@manhvann/codexkit` package.
+- Added public npm metadata for the scoped `@manhnv319/codexkit` package.
 
 ### Security
 
