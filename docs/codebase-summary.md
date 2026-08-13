@@ -31,7 +31,7 @@ codexkit/
 ├── CONTRIBUTING.md       # Contribution workflow
 ├── SECURITY.md           # Vulnerability reporting policy
 ├── CHANGELOG.md          # Release history
-└── package.json          # @manhvann/codexkit package metadata
+└── package.json          # @manhnv319/codexkit package metadata
 ```
 
 The installer copies the source `docs/` directory into the configured target's
@@ -63,7 +63,7 @@ and collaboration conventions.
 ## Package and validation
 
 - Node.js: `>=18.0.0`
-- Package: `@manhvann/codexkit`
+- Package: `@manhnv319/codexkit`
 - Executable: `ckit`
 - License: MIT
 - `npm run check`: syntax and metadata validation

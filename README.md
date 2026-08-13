@@ -37,7 +37,7 @@ the coordination layer.
 ## Install
 
 ```bash
-npm install -g @manhvann/codexkit
+npm install -g @manhnv319/codexkit
 ```
 
 Check that the CLI is available:

@@ -12,7 +12,7 @@
 
 ```text
                  ┌──────────────────────────┐
-                 │ npm package: @manhvann/   │
+                 │ npm package: @manhnv319/   │
                  │ codexkit                 │
                  └────────────┬─────────────┘
                               │ ckit
