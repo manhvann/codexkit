@@ -1,0 +1,85 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/ck-session-init.cjs",
+            "statusMessage": "Loading Codex Kit context"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/ck-subagent-init.cjs",
+            "statusMessage": "Preparing subagent context"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "Plan|planner",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/ck-cook-after-plan-reminder.cjs"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/ck-dev-rules-reminder.cjs",
+            "statusMessage": "Injecting Codex Kit rules"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/6ff39162-descriptive-name.cjs"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Glob|Grep|Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/17d7bcee-scout-block.cjs"
+          },
+          {
+            "type": "command",
+            "command": "node .codex/hooks/fd6a12c7-privacy-block.cjs"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .codex/hooks/111d873d-post-edit-simplify-reminder.cjs"
+          }
+        ]
+      }
+    ]
+  }
+}

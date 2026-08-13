@@ -1,0 +1,68 @@
+{
+  "name": "@manhvann/codexkit",
+  "version": "0.1.8",
+  "description": "Project-local Codex workspace kit for clean umbrella-repo workflows, recommended skills, agents, hooks, plans, docs, scripts, and Python runtime selection.",
+  "author": "CodexKit Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manhvann/codexkit.git"
+  },
+  "homepage": "https://github.com/manhvann/codexkit#readme",
+  "bugs": {
+    "url": "https://github.com/manhvann/codexkit/issues"
+  },
+  "type": "module",
+  "bin": {
+    "ckit": "scripts/apply-codex-kit.mjs"
+  },
+  "files": [
+    ".agents/",
+    ".codex/",
+    "docs/",
+    "plans/",
+    "scripts/",
+    "README.md",
+    "LICENSE",
+    "!**/.coverage",
+    "!**/.coverage/**",
+    "!**/__pycache__/**",
+    "!**/.pytest_cache/**",
+    "!**/__tests__/**",
+    "!**/tests/**",
+    "!**/*.test.*",
+    "!**/*_test.*",
+    "!.codex/hooks/.logs/**",
+    "!.codex/scripts/test*.py"
+  ],
+  "scripts": {
+    "apply": "node scripts/apply-codex-kit.mjs",
+    "check": "node --check scripts/apply-codex-kit.mjs && node --check scripts/validate-codex-kit-metadata.mjs && node scripts/validate-codex-kit-metadata.mjs",
+    "check:metadata": "node scripts/validate-codex-kit-metadata.mjs",
+    "pack:dry": "npm pack --dry-run",
+    "prepack": "npm run check",
+    "publish:private": "npm publish --access restricted",
+    "publish:public": "npm publish --access public"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "codex",
+    "codexkit",
+    "ai-coding",
+    "agents",
+    "skills",
+    "hooks",
+    "monorepo",
+    "workspace",
+    "developer-tools",
+    "automation",
+    "planning",
+    "python-venv"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "license": "MIT"
+}

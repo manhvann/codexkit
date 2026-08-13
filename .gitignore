@@ -1,0 +1,61 @@
+# Dependencies and package-manager state
+node_modules/
+.pnpm-store/
+.npmrc
+*.tgz
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build output and caches
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vercel/
+*.tsbuildinfo
+.serena/cache/
+
+# Test, coverage, and runtime output
+coverage/
+.coverage
+.coverage.*
+**/coverage*.json
+**/.coverage
+*.log
+logs/
+**/logs/
+**/.logs/
+.codex/hooks/.logs/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Generated plans, reports, prompts, and screenshots
+plans/*
+!plans/templates/
+!plans/templates/**
+screenshots/
+docs/screenshots/
+docs/journals/
+prompt.md
+
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local archives and temporary files
+*.zip
+tmp/
+temp/
+*.tmp

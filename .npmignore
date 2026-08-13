@@ -1,0 +1,35 @@
+.DS_Store
+*.log
+*.tgz
+
+# Never publish local auth or environment files.
+.npmrc
+.env
+.env.*
+!.env.example
+
+# Local dependency/cache output.
+node_modules/
+coverage/
+.coverage/
+.nyc_output/
+.pytest_cache/
+__pycache__/
+
+# VCS/editor state.
+.git/
+.github/
+.husky/
+.idea/
+.vscode/
+
+# Runtime logs/state created after applying a kit.
+**/.logs/
+**/logs/
+**/state/
+
+# Tests are useful in the source tree, but not needed by ckit consumers.
+**/__tests__/
+**/tests/
+**/*.test.*
+**/*_test.*
