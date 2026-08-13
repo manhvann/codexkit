@@ -87,25 +87,31 @@ grep -A5 "console.log.*TEST.*:" .codex/hooks/lib/__tests__/statusline.test.cjs
     - 100 JSONL entries < 100ms
     - 1000 bar renders < 50ms
 
-### Integration Tests (statusline-integration.test.cjs) - 16 tests
+### Integration Tests (statusline-integration.test.cjs) - 30 checks across 15 scenarios
 
-1. **Basic Input** - Model, directory, context
-2. **Git Context** - Git repo integration
+1. **Basic JSON Input** - Model, directory, and context
+2. **Git Info** - Git repository integration
 3. **Context Window** - Percentage calculation
-4. **Cost Information** - API mode billing
+4. **Cost Information** - API mode billing and line changes
 5. **Invalid JSON** - Fallback handling
-6. **Empty Input** - Error gracefully
-7. **Multi-line Output** - Multiple console outputs
+6. **Empty Input** - Graceful error handling
+7. **Multi-line Output** - Multi-line rendering
 8. **Home Directory** - Tilde expansion
-9. **NO_COLOR Support** - Environment variable respect
+9. **Colors and NO_COLOR** - Environment variable support
+10. **Wide Terminal** - Compact rendering at 160+ columns
+11. **Narrow Terminal** - Wrapping below 100 columns
+12. **Long Directory/Branch Names** - Long path handling
+13. **Long Model Names** - Truncation without overflow
+14. **Agent/Todo Tracking** - Active agent and task display
+15. **Boundary Conditions** - Zero context and very narrow terminals
 
 ## Test Results
 
 ### Latest Run
-- **Total:** 75 tests
-- **Passed:** 75
+- **Total:** 82 checks (52 unit + 30 integration)
+- **Passed:** 82
 - **Failed:** 0
-- **Coverage:** 100%
+- **Scope:** All documented statusline checks
 - **Duration:** ~3 seconds
 
 ## Expected Output
