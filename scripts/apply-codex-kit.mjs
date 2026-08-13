@@ -1026,7 +1026,7 @@ async function writePythonConfig(target, pythonRunner, { dryRun, actions }) {
 
 async function applySelection(target, selected, analysis, options) {
   const actions = [];
-  const codexSupportFiles = [".ckignore", ".ck.json", ".env.example"];
+  const codexSupportFiles = [".ckignore", ".ck.json", ".env.example", "statusline.cjs"];
   const skillSupportDirectories = ["common"];
   const skillSupportFiles = [
     ".env.example",
