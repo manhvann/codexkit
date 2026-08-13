@@ -202,17 +202,24 @@ ckit --target . --repair-hook-wrappers
 
 ## Validation
 
-Run the supported repository test suites with:
+Run the core repository test suites with:
 
 ```bash
 npm test
 ```
 
-The core suites require only Node.js. Dashboard tests run automatically when
-the optional plans-kanban dependency is installed:
+The core suites require only Node.js. Dashboard suites run automatically when
+the optional plans-kanban dependency is installed; otherwise the test command
+reports them as skipped instead of presenting a complete green run:
 
 ```bash
 npm install --prefix .agents/skills/plans-kanban
+```
+
+Require every suite and fail when optional dependencies are missing:
+
+```bash
+npm run test:full
 ```
 
 ## What It Installs
