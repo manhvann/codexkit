@@ -4,6 +4,14 @@ Project-local Codex setup for serious multi-repository workspaces.
 
 Current release: `0.1.9` · License: MIT · Repository: [github.com/manhvann/codexkit](https://github.com/manhvann/codexkit)
 
+[![Release](https://img.shields.io/badge/RELEASE-v0.1.9-0e8a16?style=for-the-badge)](https://github.com/manhvann/codexkit/releases/tag/v0.1.9)
+[![Skills](https://img.shields.io/badge/SKILLS-69-0b84d8?style=for-the-badge)](https://github.com/manhvann/codexkit/tree/main/.agents/skills)
+[![Rules](https://img.shields.io/badge/RULES-5-8e44ad?style=for-the-badge)](https://github.com/manhvann/codexkit/tree/main/.codex/rules)
+[![Output styles](https://img.shields.io/badge/OUTPUT%20STYLES-6-9b009b?style=for-the-badge)](https://github.com/manhvann/codexkit/tree/main/.codex/output-styles)
+[![Agents](https://img.shields.io/badge/AGENTS-14-6f42c1?style=for-the-badge)](https://github.com/manhvann/codexkit/tree/main/.codex/agents)
+[![Node.js](https://img.shields.io/badge/NODE.JS-18%2B-d4b000?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/LICENSE-MIT-55a91b?style=for-the-badge)](LICENSE)
+
 Codex Kit installs a curated Codex workspace layer with skills, agents, hooks,
 workflow rules, helper scripts, plan templates, output styles, and project
 documentation. It is designed for umbrella repositories that contain many child
