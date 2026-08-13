@@ -1,6 +1,6 @@
 {
   "name": "@manhnv319/codexkit",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Project-local Codex workspace kit for clean umbrella-repo workflows, recommended skills, agents, hooks, plans, docs, scripts, and Python runtime selection.",
   "author": "CodexKit Contributors",
   "repository": {
