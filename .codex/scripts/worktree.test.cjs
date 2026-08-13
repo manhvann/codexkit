@@ -6,4 +6,4 @@
  *   .agents/skills/worktree/scripts/worktree.test.cjs
  */
 
-require('../skills/worktree/scripts/worktree.test.cjs');
+require('../../.agents/skills/worktree/scripts/worktree.test.cjs');
