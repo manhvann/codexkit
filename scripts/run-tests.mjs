@@ -9,6 +9,7 @@ const coreSuites = [
   ["statusline unit", [".codex/hooks/lib/__tests__/statusline.test.cjs"]],
   ["statusline integration", [".codex/hooks/lib/__tests__/statusline-integration.test.cjs"]],
   ["worktree", [".codex/scripts/worktree.test.cjs"]],
+  ["installer", ["scripts/apply-codex-kit.test.mjs"]],
   ["markdown viewer", [".agents/skills/markdown-novel-viewer/scripts/tests/server.test.cjs"]],
 ];
 
