@@ -5,7 +5,7 @@ Comprehensive tests for statusline implementation modules.
 ## Files
 
 - **statusline.test.cjs** - Unit tests for colors, parser, config counter (52 tests)
-- **statusline-integration.test.cjs** - End-to-end tests of statusline.cjs (16 tests)
+- **statusline-integration.test.cjs** - End-to-end tests of statusline.cjs (30 checks)
 - **ck-config-utils.test.cjs** - Tests for config utility functions (existing)
 
 ## Running Tests

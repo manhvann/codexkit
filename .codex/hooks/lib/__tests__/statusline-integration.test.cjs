@@ -12,6 +12,10 @@ const path = require('path');
 const os = require('os');
 const { execSync } = require('child_process');
 
+// Keep integration coverage independent from a project's preferred display mode.
+// The suite exercises the full renderer, while production config may use minimal.
+process.env.CODEX_STATUSLINE_MODE = 'full';
+
 let passed = 0;
 let failed = 0;
 const failures = [];
