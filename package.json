@@ -46,6 +46,7 @@
     "check:package": "node scripts/validate-package-metadata.mjs",
     "check:metadata": "node scripts/validate-codex-kit-metadata.mjs",
     "pack:dry": "npm pack --dry-run",
+    "test": "node scripts/run-tests.mjs",
     "prepack": "npm run check",
     "publish:private": "npm publish --access restricted",
     "publish:public": "npm publish --access public"

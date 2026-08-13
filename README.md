@@ -192,6 +192,21 @@ ckit --target . --dry-run --details
 ckit --target . --repair-hook-wrappers
 ```
 
+## Validation
+
+Run the supported repository test suites with:
+
+```bash
+npm test
+```
+
+The core suites require only Node.js. Dashboard tests run automatically when
+the optional plans-kanban dependency is installed:
+
+```bash
+npm install --prefix .agents/skills/plans-kanban
+```
+
 ## What It Installs
 
 - `.agents/skills`
