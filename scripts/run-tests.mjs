@@ -25,6 +25,8 @@ const optionalSuites = [
     path.join(root, ".agents/skills/plans-kanban/node_modules/gray-matter"),
   ],
 ];
+const fullRun = process.argv.includes("--full");
+const skippedSuites = [];
 
 function runSuite(name, args) {
   console.log(`\n=== ${name} ===`);
@@ -50,14 +52,25 @@ for (const [name, args, dependencyPath] of optionalSuites) {
     console.log(`\n=== ${name} (skipped) ===`);
     console.log(`Optional dependencies are not installed. Run:`);
     console.log(`  npm install --prefix .agents/skills/plans-kanban`);
+    skippedSuites.push(name);
+    if (fullRun) failed = true;
     continue;
   }
   if (!runSuite(name, args)) failed = true;
 }
 
 if (failed) {
-  console.error("\nTest suite failed.");
+  if (fullRun && skippedSuites.length > 0) {
+    console.error(`\nFull test suite incomplete: ${skippedSuites.join(", ")} could not run.`);
+  } else {
+    console.error("\nTest suite failed.");
+  }
   process.exit(1);
 }
 
-console.log("\nAll supported test suites passed.");
+if (skippedSuites.length > 0) {
+  console.log(`\nCore test suites passed. Optional suites skipped: ${skippedSuites.join(", ")}.`);
+  console.log("Run `npm run test:full` after installing optional dependencies for a complete run.");
+} else {
+  console.log("\nAll supported test suites passed.");
+}
