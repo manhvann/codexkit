@@ -5,7 +5,7 @@
   "author": "CodexKit Contributors",
   "repository": {
     "type": "git",
-    "url": "https://github.com/manhvann/codexkit.git"
+    "url": "git+https://github.com/manhvann/codexkit.git"
   },
   "homepage": "https://github.com/manhvann/codexkit#readme",
   "bugs": {
