@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-const assetsDir = path.join(__dirname, '..', 'assets');
+const assetsDir = path.join(__dirname, '..', '..', 'plans-kanban', 'assets');
 const templatePath = path.join(assetsDir, 'dashboard-template.html');
 const cssPath = path.join(assetsDir, 'dashboard.css');
 const jsPath = path.join(assetsDir, 'dashboard.js');
@@ -51,7 +51,7 @@ describe('dashboard-template.html', () => {
 
   it('should have dashboard header', () => {
     assert(htmlContent.includes('class="dashboard-header"'));
-    assert(htmlContent.includes('<h1>Plans Dashboard</h1>'));
+    assert(htmlContent.includes('<h1>Plans</h1>'));
   });
 
   it('should have theme toggle button', () => {

@@ -134,7 +134,7 @@ test('resolveImages converts relative paths', () => {
   const md = '![Alt](./image.png)';
   const resolved = resolveImages(md, '/base/path');
   assertIncludes(resolved, '/file/', 'Should include /file/ route');
-  assertIncludes(resolved, '/base/path', 'Should include base path');
+  assertIncludes(resolved, encodeURIComponent('/base/path/image.png'), 'Should include encoded base path');
 });
 
 test('resolveImages preserves absolute URLs', () => {
@@ -147,19 +147,19 @@ test('resolveImages handles reference-style definitions', () => {
   const md = '![Step 1 Initial]\n\n[Step 1 Initial]: ./screenshots/step1.png';
   const resolved = resolveImages(md, '/base/path');
   assertIncludes(resolved, '/file/', 'Should include /file/ route in ref definition');
-  assertIncludes(resolved, '/base/path/screenshots/step1.png', 'Should resolve relative path');
+  assertIncludes(resolved, encodeURIComponent('/base/path/screenshots/step1.png'), 'Should resolve relative path');
 });
 
 test('resolveImages handles reference-style with titles', () => {
   const md = '[logo]: ./images/logo.png "Company Logo"';
   const resolved = resolveImages(md, '/project');
-  assertIncludes(resolved, '/file/project/images/logo.png', 'Should resolve path with title');
+  assertIncludes(resolved, `/file/${encodeURIComponent('/project/images/logo.png')}`, 'Should resolve path with title');
 });
 
 test('resolveImages handles inline images with titles', () => {
   const md = '![Alt](./image.png "Title text")';
   const resolved = resolveImages(md, '/base');
-  assertIncludes(resolved, '/file/base/image.png', 'Should resolve inline with title');
+  assertIncludes(resolved, `/file/${encodeURIComponent('/base/image.png')}`, 'Should resolve inline with title');
 });
 
 test('addHeadingIds adds id attributes', () => {
@@ -260,7 +260,7 @@ test('getNavigationContext returns correct structure', () => {
 test('generateNavSidebar returns HTML', () => {
   const html = generateNavSidebar(testPlanFile);
   assertIncludes(html, '<nav', 'Should have nav element');
-  assertIncludes(html, 'phase-list', 'Should have phase list');
+  assertIncludes(html, 'phase-items', 'Should have phase list');
 });
 
 test('generateNavSidebar returns empty for non-plan', () => {
