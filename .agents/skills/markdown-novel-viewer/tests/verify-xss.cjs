@@ -4,7 +4,7 @@
  * XSS Protection Verification
  */
 
-const renderer = require('../scripts/lib/dashboard-renderer.cjs');
+const renderer = require('../../plans-kanban/scripts/lib/dashboard-renderer.cjs');
 
 console.log('\nXSS Protection Verification');
 console.log('='.repeat(70));

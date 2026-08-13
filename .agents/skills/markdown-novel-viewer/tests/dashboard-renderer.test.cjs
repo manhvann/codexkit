@@ -14,7 +14,7 @@ const {
   generatePlansGrid,
   escapeHtml,
   formatDate
-} = require('../scripts/lib/dashboard-renderer.cjs');
+} = require('../../plans-kanban/scripts/lib/dashboard-renderer.cjs');
 
 describe('escapeHtml', () => {
   it('should escape HTML special characters', () => {
@@ -76,34 +76,8 @@ describe('formatDate', () => {
 });
 
 describe('generateProgressRing', () => {
-  it('should generate SVG with correct progress percentage', () => {
-    const svg = generateProgressRing(50);
-    assert(svg.includes('50%'));
-    assert(svg.includes('stroke-dasharray'));
-  });
-
-  it('should generate valid SVG structure', () => {
-    const svg = generateProgressRing(75);
-    assert(svg.includes('<svg class="progress-ring"'));
-    assert(svg.includes('<circle'));
-    assert(svg.includes('<text'));
-  });
-
-  it('should handle 0% progress', () => {
-    const svg = generateProgressRing(0);
-    assert(svg.includes('0%'));
-    assert(svg.includes('0, 100'));
-  });
-
-  it('should handle 100% progress', () => {
-    const svg = generateProgressRing(100);
-    assert(svg.includes('100%'));
-    assert(svg.includes('100, 100'));
-  });
-
-  it('should have aria-hidden for accessibility', () => {
-    const svg = generateProgressRing(50);
-    assert(svg.includes('aria-hidden="true"'));
+  it('should remain empty in the minimal dashboard design', () => {
+    assert.strictEqual(generateProgressRing(50), '');
   });
 });
 
@@ -112,7 +86,6 @@ describe('generateProgressBar', () => {
     const bar = generateProgressBar({ total: 10, completed: 5, inProgress: 3, pending: 2 });
     assert(bar.includes('50.0%')); // completed
     assert(bar.includes('30.0%')); // in-progress
-    assert(bar.includes('20.0%')); // pending
   });
 
   it('should have accessibility attributes', () => {
@@ -128,33 +101,18 @@ describe('generateProgressBar', () => {
     assert(bar.includes('class="progress-bar"'));
   });
 
-  it('should create three segments with correct classes', () => {
+  it('should create the active segments with correct classes', () => {
     const bar = generateProgressBar({ total: 10, completed: 5, inProgress: 3, pending: 2 });
     assert(bar.includes('class="bar-segment completed"'));
     assert(bar.includes('class="bar-segment in-progress"'));
-    assert(bar.includes('class="bar-segment pending"'));
+    assert(!bar.includes('bar-segment pending'));
   });
 });
 
 describe('generateStatusCounts', () => {
-  it('should generate status count HTML', () => {
+  it('should remain empty in the minimal dashboard design', () => {
     const html = generateStatusCounts({ completed: 3, inProgress: 2, pending: 1 });
-    assert(html.includes('3'));
-    assert(html.includes('2'));
-    assert(html.includes('1'));
-  });
-
-  it('should have accessibility features', () => {
-    const html = generateStatusCounts({ completed: 3, inProgress: 2, pending: 1 });
-    assert(html.includes('visually-hidden'));
-    assert(html.includes('data-tooltip'));
-  });
-
-  it('should have correct status classes', () => {
-    const html = generateStatusCounts({ completed: 3, inProgress: 2, pending: 1 });
-    assert(html.includes('status-count completed'));
-    assert(html.includes('status-count in-progress'));
-    assert(html.includes('status-count pending'));
+    assert.strictEqual(html, '');
   });
 });
 
@@ -172,7 +130,7 @@ describe('generatePlanCard', () => {
     const card = generatePlanCard(plan);
     assert(card.includes('Test Plan'));
     assert(card.includes('plan-001'));
-    assert(card.includes('/plans/test-plan'));
+    assert(card.includes('data-id="plan-001"'));
   });
 
   it('should escape HTML in plan name', () => {
@@ -190,9 +148,9 @@ describe('generatePlanCard', () => {
     assert(card.includes('&lt;script&gt;'));
   });
 
-  it('should escape HTML in plan path', () => {
+  it('should escape HTML in plan metadata', () => {
     const plan = {
-      id: 'plan-001',
+      id: '"><script>alert(1)</script><"',
       name: 'Test',
       status: 'pending',
       progress: 0,
@@ -246,7 +204,7 @@ describe('generatePlanCard', () => {
       phases: { completed: 0, inProgress: 0, pending: 1, total: 1 }
     };
     const card = generatePlanCard(plan);
-    assert(card.includes('<time class="plan-date" datetime='));
+    assert(card.includes('<time datetime='));
   });
 });
 
