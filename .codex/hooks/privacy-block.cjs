@@ -3,13 +3,14 @@
  * privacy-block.cjs - Block access to sensitive files unless user-approved
  *
  * PRIVACY-based blocking (separate from SIZE-based scout-block)
- * Blocks sensitive files. LLM must get user approval and use APPROVED: prefix.
+ * Blocks sensitive files. After user approval, grant a one-time approval with
+ * privacy-approval.cjs and retry the original tool call with its real path.
  *
  * Flow:
  * 1. LLM tries: Read ".env" → BLOCKED
  * 2. LLM asks user for permission
- * 3. User approves
- * 4. LLM retries: Read "APPROVED:.env" → ALLOWED
+ * 3. LLM grants one approval for the exact tool/path
+ * 4. LLM retries the original tool call unchanged → ALLOWED once
  *
  * Core logic extracted to lib/privacy-checker.cjs for OpenCode plugin reuse.
  */
@@ -27,7 +28,8 @@
       hasApprovalPrefix,
       stripApprovalPrefix,
       extractPaths,
-      isSuspiciousPath
+      isSuspiciousPath,
+      buildPromptData
     } = require('./lib/privacy-checker.cjs');
     const { isHookEnabled } = require('./lib/ck-config-utils.cjs');
 
@@ -41,23 +43,13 @@
  * @param {string} filePath - Blocked file path
  * @returns {string} Formatted block message with JSON marker
  */
-function formatBlockMessage(filePath) {
-  const basename = path.basename(filePath);
+function shellQuote(value) {
+  return `'${String(value).replace(/'/g, `'\\''`)}'`;
+}
 
-  // JSON marker for the assistant to parse and present to the user.
-  const promptData = {
-    type: 'PRIVACY_PROMPT',
-    file: filePath,
-    basename: basename,
-    question: {
-      header: 'File Access',
-      text: `I need to read "${basename}" which may contain sensitive data (API keys, passwords, tokens). Do you approve?`,
-      options: [
-        { label: 'Yes, approve access', description: `Allow reading ${basename} this time` },
-        { label: 'No, skip this file', description: 'Continue without accessing this file' }
-      ]
-    }
-  };
+function formatBlockMessage(filePath, toolName = 'Read') {
+  const promptData = buildPromptData(filePath, toolName);
+  const approvalCommand = `node .codex/hooks/privacy-approval.cjs approve --tool ${shellQuote(toolName)} --path ${shellQuote(filePath)}`;
 
   return `
 \x1b[36mNOTE:\x1b[0m This is not an error - this block protects sensitive data.
@@ -73,7 +65,7 @@ ${JSON.stringify(promptData, null, 2)}
 \x1b[90m@@PRIVACY_PROMPT_END@@\x1b[0m
 
   \x1b[34mAssistant:\x1b[0m Ask the user for approval using the JSON above, then:
-  \x1b[32mIf "Yes":\x1b[0m Use bash to read: cat "${filePath}"
+  \x1b[32mIf "Yes":\x1b[0m Run ${approvalCommand}, then retry the original ${toolName} call unchanged.
   \x1b[31mIf "No":\x1b[0m  Continue without this file.
 `;
 }
@@ -128,7 +120,7 @@ async function main() {
 
   if (result.blocked) {
     // No approval - block
-    console.error(formatBlockMessage(result.filePath));
+    console.error(formatBlockMessage(result.filePath, toolName));
     process.exit(2);
   }
 
