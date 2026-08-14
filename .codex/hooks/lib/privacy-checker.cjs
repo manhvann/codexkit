@@ -10,12 +10,16 @@
 
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+const crypto = require('crypto');
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
 
 const APPROVED_PREFIX = 'APPROVED:';
+const DEFAULT_APPROVAL_TTL_SECONDS = 300;
+const APPROVABLE_TOOLS = new Set(['Read', 'Write', 'Edit', 'MultiEdit']);
 
 // Safe file patterns - exempt from privacy checks (documentation/template files)
 const SAFE_PATTERNS = [
@@ -81,6 +85,118 @@ function stripApprovalPrefix(testPath) {
  */
 function isSuspiciousPath(strippedPath) {
   return strippedPath.includes('..') || path.isAbsolute(strippedPath);
+}
+
+/**
+ * Normalize a sensitive path to an absolute path inside the current project.
+ * Approval records are scoped to the project root so a grant cannot be reused
+ * for an identically named file in another workspace.
+ * @param {string} filePath - Relative or absolute file path
+ * @param {string} [cwd] - Project root
+ * @returns {string|null} Normalized path, or null when invalid/outside project
+ */
+function normalizeApprovalPath(filePath, cwd = process.cwd()) {
+  if (!filePath || typeof filePath !== 'string' || filePath.includes('\0')) return null;
+  const cleanPath = stripApprovalPrefix(filePath).trim();
+  if (!cleanPath) return null;
+
+  const projectRoot = path.resolve(cwd);
+  const resolvedPath = path.resolve(projectRoot, cleanPath);
+  const relativePath = path.relative(projectRoot, resolvedPath);
+  if (relativePath === '..' || relativePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativePath)) {
+    return null;
+  }
+  return resolvedPath;
+}
+
+function isApprovableTool(toolName) {
+  return APPROVABLE_TOOLS.has(toolName);
+}
+
+function getApprovalStorePath(cwd = process.cwd(), storePath) {
+  if (storePath) return storePath;
+  const projectRoot = path.resolve(cwd);
+  const projectId = crypto.createHash('sha256').update(projectRoot).digest('hex').slice(0, 24);
+  return path.join(os.tmpdir(), 'codexkit-privacy-approvals', `${projectId}.json`);
+}
+
+function readApprovalState(storePath) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(storePath, 'utf8'));
+    return { version: 1, grants: Array.isArray(parsed.grants) ? parsed.grants : [] };
+  } catch {
+    return { version: 1, grants: [] };
+  }
+}
+
+function writeApprovalState(storePath, state) {
+  fs.mkdirSync(path.dirname(storePath), { recursive: true, mode: 0o700 });
+  const temporaryPath = `${storePath}.${process.pid}.${Math.random().toString(36).slice(2)}.tmp`;
+  try {
+    fs.writeFileSync(temporaryPath, `${JSON.stringify(state, null, 2)}\n`, { mode: 0o600 });
+    fs.renameSync(temporaryPath, storePath);
+    try { fs.chmodSync(storePath, 0o600); } catch { /* Windows may ignore chmod */ }
+  } finally {
+    try { fs.unlinkSync(temporaryPath); } catch { /* already renamed */ }
+  }
+}
+
+/**
+ * Grant one approval for a sensitive path/tool combination.
+ * @returns {{path: string, tool: string, expiresAt: number}}
+ */
+function grantPrivacyApproval({ filePath, toolName, cwd = process.cwd(), ttlSeconds = DEFAULT_APPROVAL_TTL_SECONDS, approvalStorePath }) {
+  if (!isApprovableTool(toolName)) {
+    throw new Error(`Unsupported approval tool: ${toolName || 'unknown'}`);
+  }
+  if (!isPrivacySensitive(filePath)) {
+    throw new Error(`Path is not privacy-sensitive: ${filePath || '(empty)'}`);
+  }
+  const normalizedPath = normalizeApprovalPath(filePath, cwd);
+  if (!normalizedPath) {
+    throw new Error('Approval path must stay inside the current project');
+  }
+  const ttl = Number(ttlSeconds);
+  if (!Number.isFinite(ttl) || ttl <= 0 || ttl > 3600) {
+    throw new Error('Approval TTL must be greater than 0 and no more than 3600 seconds');
+  }
+
+  const storePath = getApprovalStorePath(cwd, approvalStorePath);
+  const now = Date.now();
+  const state = readApprovalState(storePath);
+  state.grants = state.grants.filter((grant) => Number(grant.expiresAt) > now && Number(grant.usesRemaining) > 0);
+  const grant = {
+    path: normalizedPath,
+    tool: toolName,
+    expiresAt: now + Math.round(ttl * 1000),
+    usesRemaining: 1,
+  };
+  state.grants.push(grant);
+  writeApprovalState(storePath, state);
+  return grant;
+}
+
+/**
+ * Consume one matching approval. Returns null when no valid grant exists.
+ */
+function consumePrivacyApproval({ filePath, toolName, cwd = process.cwd(), approvalStorePath }) {
+  if (!isApprovableTool(toolName)) return null;
+  const normalizedPath = normalizeApprovalPath(filePath, cwd);
+  if (!normalizedPath) return null;
+
+  const storePath = getApprovalStorePath(cwd, approvalStorePath);
+  const now = Date.now();
+  const state = readApprovalState(storePath);
+  const validGrants = state.grants.filter((grant) => Number(grant.expiresAt) > now && Number(grant.usesRemaining) > 0);
+  const index = validGrants.findIndex((grant) => grant.path === normalizedPath && grant.tool === toolName);
+  if (index === -1) {
+    if (validGrants.length !== state.grants.length) writeApprovalState(storePath, { version: 1, grants: validGrants });
+    return null;
+  }
+
+  const [grant] = validGrants.splice(index, 1);
+  writeApprovalState(storePath, { version: 1, grants: validGrants });
+  return { ...grant, path: normalizedPath, approvalSource: 'one-time' };
 }
 
 /**
@@ -182,17 +298,19 @@ function isPrivacyBlockDisabled(configDir) {
  * @param {string} filePath - Blocked file path
  * @returns {Object} Prompt data object
  */
-function buildPromptData(filePath) {
+function buildPromptData(filePath, toolName = 'Read') {
   const basename = path.basename(filePath);
+  const action = toolName === 'Write' ? 'write to' : toolName === 'Edit' || toolName === 'MultiEdit' ? 'edit' : 'read';
   return {
     type: 'PRIVACY_PROMPT',
     file: filePath,
     basename: basename,
+    tool: toolName,
     question: {
       header: 'File Access',
-      text: `I need to read "${basename}" which may contain sensitive data (API keys, passwords, tokens). Do you approve?`,
+      text: `I need to ${action} "${basename}" which may contain sensitive data (API keys, passwords, tokens). Do you approve this ${toolName} operation?`,
       options: [
-        { label: 'Yes, approve access', description: `Allow reading ${basename} this time` },
+        { label: 'Yes, approve once', description: `Allow this ${toolName} operation on ${basename} once` },
         { label: 'No, skip this file', description: 'Continue without accessing this file' }
       ]
     }
@@ -224,7 +342,7 @@ function buildPromptData(filePath) {
  * }}
  */
 function checkPrivacy({ toolName, toolInput, options = {} }) {
-  const { disabled, configDir, allowBash = true } = options;
+  const { disabled, configDir, allowBash = true, cwd = process.cwd(), approvalStorePath } = options;
 
   // Check if disabled via options or config
   if (disabled || isPrivacyBlockDisabled(configDir)) {
@@ -249,6 +367,21 @@ function checkPrivacy({ toolName, toolInput, options = {} }) {
       };
     }
 
+    const oneTimeApproval = consumePrivacyApproval({
+      filePath: testPath,
+      toolName,
+      cwd,
+      approvalStorePath,
+    });
+    if (oneTimeApproval) {
+      return {
+        blocked: false,
+        approved: true,
+        approvalSource: 'one-time',
+        filePath: oneTimeApproval.path,
+      };
+    }
+
     // For Bash: warn but don't block (allows "Yes → bash cat" flow)
     if (isBashTool && allowBash) {
       return {
@@ -264,7 +397,7 @@ function checkPrivacy({ toolName, toolInput, options = {} }) {
       blocked: true,
       filePath: testPath,
       reason: `Sensitive file access requires user approval`,
-      promptData: buildPromptData(testPath)
+      promptData: buildPromptData(testPath, toolName)
     };
   }
 
@@ -289,6 +422,11 @@ module.exports = {
   extractPaths,
   isPrivacyBlockDisabled,
   buildPromptData,
+  normalizeApprovalPath,
+  isApprovableTool,
+  getApprovalStorePath,
+  grantPrivacyApproval,
+  consumePrivacyApproval,
 
   // Constants
   APPROVED_PREFIX,

@@ -222,6 +222,23 @@ Require every suite and fail when optional dependencies are missing:
 npm run test:full
 ```
 
+### Sensitive file approvals
+
+The privacy guard protects local environment files, credentials, secrets, and
+private keys. After explicitly approving a blocked operation, grant a one-time
+approval for the exact tool and path, then retry the original operation:
+
+```bash
+node .codex/hooks/privacy-approval.cjs approve \
+  --tool Write \
+  --path .env.local
+```
+
+Approvals are stored outside the repository, scoped to the current workspace,
+expire after five minutes, and are consumed after one use. The original path
+must remain unchanged in the subsequent `Write`, `Edit`, `MultiEdit`, or `Read`
+call.
+
 ## What It Installs
 
 - `.agents/skills`
