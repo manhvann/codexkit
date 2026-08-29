@@ -43,7 +43,8 @@ const commandTests = [
   { cmd: 'cat "path with spaces/file.js"', hasPath: 'path with spaces/file.js', desc: 'quoted path' },
   { cmd: "cat 'single/quoted/path.js'", hasPath: 'single/quoted/path.js', desc: 'single quoted path' },
   { cmd: 'cd apps/api/node_modules && ls', hasPath: 'apps/api/node_modules', desc: 'cd with chained command' },
-  { cmd: 'rm -rf node_modules', hasPath: 'node_modules', desc: 'rm with flags' },
+  { cmd: 'rm -rf build', hasPath: 'build', desc: 'rm with flags (blocked dir)' },
+  { cmd: 'rm -rf node_modules', hasPath: null, desc: 'rm bare node_modules not extracted (SKI-11, not blocked by default)' },
   { cmd: 'cp -r dist/ backup/', hasPath: 'dist', desc: 'cp with flags' },
 
   // Note: Build commands may extract 'build' as a blocked dir name, but this is handled

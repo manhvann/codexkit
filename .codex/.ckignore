@@ -1,12 +1,14 @@
 # CodexKit Ignore File - SIZE-based blocking
 # Blocks directories with heavy file counts that fill LLM context
 # Syntax: gitignore-spec | Use ! prefix to allow (e.g., !src/vendor)
+#
+# Note: node_modules, dist, .next, .git are intentionally NOT listed here
+# (SKI-11) — they're commonly needed for git metadata, dependency version
+# checks, and build artifact debugging. Add them back below if this project
+# needs them blocked.
 
 # JS/TS
-node_modules
-dist
 build
-.next
 .nuxt
 
 # Python
@@ -18,8 +20,7 @@ venv
 vendor
 target
 
-# VCS & Coverage
-.git
+# Coverage
 coverage
 
 # Allow reading these files
