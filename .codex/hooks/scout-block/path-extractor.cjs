@@ -43,7 +43,7 @@ const FILESYSTEM_COMMANDS = [
  * @param {Object} toolInput - The tool_input from hook JSON
  * @returns {string[]} Array of extracted paths
  */
-function extractFromToolInput(toolInput) {
+function extractFromToolInput(toolInput, extraBlockedNames) {
   const paths = [];
 
   if (!toolInput || typeof toolInput !== 'object') {
@@ -61,7 +61,7 @@ function extractFromToolInput(toolInput) {
 
   // Extract from Bash command if present
   if (toolInput.command && typeof toolInput.command === 'string') {
-    const cmdPaths = extractFromCommand(toolInput.command);
+    const cmdPaths = extractFromCommand(toolInput.command, extraBlockedNames);
     paths.push(...cmdPaths);
   }
 
@@ -77,9 +77,11 @@ function extractFromToolInput(toolInput) {
  * preventing false positives on search terms and string arguments.
  *
  * @param {string} command - The command string
+ * @param {Set<string>|string[]} [extraBlockedNames] - Additional bare directory
+ *   names loaded from a project's .ckignore, treated like BLOCKED_DIR_NAMES
  * @returns {string[]} Array of extracted paths
  */
-function extractFromCommand(command) {
+function extractFromCommand(command, extraBlockedNames) {
   if (!command || typeof command !== 'string') {
     return [];
   }
@@ -172,7 +174,7 @@ function extractFromCommand(command) {
 
     // For filesystem commands, extract blocked dir names with priority.
     // "cd build", "ls dist", "cat node_modules/..." — "build"/"dist" are paths here.
-    if (isFsCommand && isBlockedDirName(token)) {
+    if (isFsCommand && isBlockedDirName(token, extraBlockedNames)) {
       paths.push(normalizeExtractedPath(token));
       continue;
     }
@@ -216,10 +218,15 @@ const BLOCKED_DIR_NAMES = [
  * This takes priority over command keyword filtering
  *
  * @param {string} token - Token to check
+ * @param {Set<string>|string[]} [extraBlockedNames] - Additional bare directory
+ *   names loaded from a project's .ckignore (e.g. a re-enabled default like
+ *   node_modules), checked in addition to BLOCKED_DIR_NAMES
  * @returns {boolean}
  */
-function isBlockedDirName(token) {
-  return BLOCKED_DIR_NAMES.includes(token);
+function isBlockedDirName(token, extraBlockedNames) {
+  if (BLOCKED_DIR_NAMES.includes(token)) return true;
+  if (!extraBlockedNames) return false;
+  return extraBlockedNames.has ? extraBlockedNames.has(token) : extraBlockedNames.includes(token);
 }
 
 /**

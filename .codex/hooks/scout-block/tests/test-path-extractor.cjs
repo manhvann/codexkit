@@ -120,6 +120,30 @@ for (const test of commandTests) {
   }
 }
 
+// Opt-in extraction: projects that re-enable node_modules/dist/.git via
+// .ckignore must have bare directory commands (cd/ls/rm) extracted too,
+// not just paths with a separator (SKI-11 follow-up).
+console.log('\n--- Opt-in extraBlockedNames Tests ---');
+const optInTests = [
+  { cmd: 'cd node_modules', extra: ['node_modules'], hasPath: 'node_modules', desc: 'cd node_modules extracted with opt-in extraBlockedNames' },
+  { cmd: 'ls .git', extra: new Set(['.git']), hasPath: '.git', desc: 'ls .git extracted with opt-in Set extraBlockedNames' },
+  { cmd: 'rm -rf dist', extra: ['dist'], hasPath: 'dist', desc: 'rm -rf dist extracted with opt-in extraBlockedNames' },
+  { cmd: 'cd node_modules', extra: undefined, hasPath: null, desc: 'cd node_modules NOT extracted without extraBlockedNames' },
+];
+for (const test of optInTests) {
+  const result = extractFromCommand(test.cmd, test.extra);
+  const success = test.hasPath === null
+    ? !result.includes(test.hasPath) && result.every(p => !p.includes('node_modules') && !p.includes('.git') && !p.includes('dist'))
+    : result.some(p => p.includes(test.hasPath));
+  if (success) {
+    console.log(`\x1b[32m✓\x1b[0m ${test.desc}: ${JSON.stringify(result)}`);
+    passed++;
+  } else {
+    console.log(`\x1b[31m✗\x1b[0m ${test.desc}: got ${JSON.stringify(result)}`);
+    failed++;
+  }
+}
+
 // looksLikePath tests
 console.log('\n--- looksLikePath Tests ---');
 for (const test of looksLikePathTests) {

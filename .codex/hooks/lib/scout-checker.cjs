@@ -210,8 +210,17 @@ function checkScoutBlock({ toolName, toolInput, options = {} }) {
   const patterns = loadPatterns(resolvedCkignorePath);
   const matcher = createMatcher(patterns);
 
+  // Bare directory-name patterns (no slashes/wildcards/negation) loaded from
+  // .ckignore — e.g. a project re-enabling `node_modules` after SKI-11 removed
+  // it from the defaults. These are honored the same as BLOCKED_DIR_NAMES so
+  // bare commands like `cd node_modules` are blocked too, not just paths with
+  // a separator (`cat node_modules/x`).
+  const extraBlockedNames = new Set(
+    patterns.filter(p => !p.startsWith('!') && !/[\/*?[\]]/.test(p))
+  );
+
   // Extract paths from tool input
-  const extractedPaths = extractFromToolInput(toolInput);
+  const extractedPaths = extractFromToolInput(toolInput, extraBlockedNames);
 
   // If no paths extracted, allow operation
   if (extractedPaths.length === 0) {
