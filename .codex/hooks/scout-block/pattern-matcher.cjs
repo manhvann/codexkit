@@ -12,12 +12,13 @@ const path = require('path');
 
 // Default patterns if .ckignore doesn't exist or is empty
 // Only includes directories with HEAVY file counts (1000+ files typical)
+// Note: node_modules, .git, dist, .next are intentionally NOT blocked by
+// default (SKI-11) — they're commonly needed for git metadata, dependency
+// version checks, and build artifact debugging. Add them to .ckignore if a
+// project needs to block them.
 const DEFAULT_PATTERNS = [
-  // JavaScript/TypeScript - package dependencies & build outputs
-  'node_modules',
-  'dist',
+  // JavaScript/TypeScript - build outputs
   'build',
-  '.next',
   '.nuxt',
   // Python - virtualenvs & cache
   '__pycache__',
@@ -27,8 +28,6 @@ const DEFAULT_PATTERNS = [
   'vendor',
   // Rust/Java - compiled outputs
   'target',
-  // Version control
-  '.git',
   // Test coverage (can be large with reports)
   'coverage',
 ];

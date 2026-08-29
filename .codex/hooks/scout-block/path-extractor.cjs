@@ -208,8 +208,7 @@ function stripValueSkipFlagArgs(command) {
 // match command keywords (e.g., "build" is both a subcommand and a dir name)
 // Keep in sync with DEFAULT_PATTERNS in pattern-matcher.cjs
 const BLOCKED_DIR_NAMES = [
-  'node_modules', '__pycache__', '.git', 'dist', 'build',
-  '.next', '.nuxt', '.venv', 'venv', 'vendor', 'target', 'coverage'
+  '__pycache__', 'build', '.nuxt', '.venv', 'venv', 'vendor', 'target', 'coverage'
 ];
 
 /**

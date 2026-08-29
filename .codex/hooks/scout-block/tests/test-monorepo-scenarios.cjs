@@ -2,9 +2,10 @@
 /**
  * test-monorepo-scenarios.cjs - Integration tests for monorepo patterns
  *
- * THIS IS THE CRITICAL TEST FILE FOR THE BUG FIX!
- * Tests that subfolder blocked directories (node_modules, dist, etc.)
- * are properly blocked in monorepo structures.
+ * Verifies:
+ * - node_modules, .git, dist, .next are NOT blocked by default (SKI-11)
+ * - Other heavy dirs (build, __pycache__, etc.) are still blocked, including
+ *   in monorepo subfolders (the original subfolder-blocking bug fix)
  */
 
 const { execSync } = require('child_process');
@@ -13,70 +14,78 @@ const path = require('path');
 const hookPath = path.join(__dirname, '..', '..', 'scout-block.cjs');
 
 const scenarios = [
-  // === THE BUG CASES - These MUST be BLOCKED ===
+  // === node_modules/.git/dist/.next NOT blocked by default (SKI-11) ===
   {
     input: { tool_name: 'Bash', tool_input: { command: 'ls packages/web/node_modules' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] ls subfolder node_modules'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] ls subfolder node_modules not blocked by default'
   },
   {
     input: { tool_name: 'Bash', tool_input: { command: 'cd apps/api/node_modules' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] cd subfolder node_modules'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] cd subfolder node_modules not blocked by default'
   },
   {
     input: { tool_name: 'Bash', tool_input: { command: 'cat packages/shared/node_modules/lodash/index.js' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] cat file in subfolder node_modules'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] cat file in subfolder node_modules not blocked by default'
   },
   {
     input: { tool_name: 'Read', tool_input: { file_path: 'packages/web/node_modules/react/package.json' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] Read subfolder node_modules'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] Read subfolder node_modules not blocked by default'
   },
   {
     input: { tool_name: 'Grep', tool_input: { pattern: 'export', path: 'packages/web/node_modules' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] Grep in subfolder node_modules'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] Grep in subfolder node_modules not blocked by default'
   },
   {
     input: { tool_name: 'Glob', tool_input: { pattern: 'packages/web/node_modules/**/*.js' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] Glob subfolder node_modules'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] Glob subfolder node_modules not blocked by default'
   },
-
-  // === Deep nesting (also bug cases) ===
   {
     input: { tool_name: 'Read', tool_input: { file_path: 'a/b/c/d/node_modules/pkg/index.js' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] Deep nested node_modules'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] Deep nested node_modules not blocked by default'
   },
   {
     input: { tool_name: 'Bash', tool_input: { command: 'ls packages/web/dist' } },
-    expected: 'BLOCKED',
-    desc: '[BUG FIX] ls subfolder dist'
+    expected: 'ALLOWED',
+    desc: '[SKI-11] ls subfolder dist not blocked by default'
   },
+  {
+    input: { tool_name: 'Bash', tool_input: { command: 'ls node_modules' } },
+    expected: 'ALLOWED',
+    desc: '[SKI-11] ls root node_modules not blocked by default'
+  },
+  {
+    input: { tool_name: 'Read', tool_input: { file_path: 'node_modules/lodash/index.js' } },
+    expected: 'ALLOWED',
+    desc: '[SKI-11] Read root node_modules not blocked by default'
+  },
+  {
+    input: { tool_name: 'Bash', tool_input: { command: 'cat .git/config' } },
+    expected: 'ALLOWED',
+    desc: '[SKI-11] cat .git file not blocked by default'
+  },
+  {
+    input: { tool_name: 'Bash', tool_input: { command: 'ls apps/web/.next/cache' } },
+    expected: 'ALLOWED',
+    desc: '[SKI-11] ls .next subfolder not blocked by default'
+  },
+
+  // === THE BUG CASES - other heavy dirs MUST still be BLOCKED in subfolders ===
   {
     input: { tool_name: 'Bash', tool_input: { command: 'cat apps/api/build/server.js' } },
     expected: 'BLOCKED',
     desc: '[BUG FIX] cat subfolder build'
   },
-
-  // === Root level blocking (should still work) ===
   {
-    input: { tool_name: 'Bash', tool_input: { command: 'ls node_modules' } },
+    input: { tool_name: 'Read', tool_input: { file_path: 'packages/shared/__pycache__/module.pyc' } },
     expected: 'BLOCKED',
-    desc: 'ls root node_modules'
-  },
-  {
-    input: { tool_name: 'Read', tool_input: { file_path: 'node_modules/lodash/index.js' } },
-    expected: 'BLOCKED',
-    desc: 'Read root node_modules'
-  },
-  {
-    input: { tool_name: 'Bash', tool_input: { command: 'cat .git/config' } },
-    expected: 'BLOCKED',
-    desc: 'cat .git file'
+    desc: '[BUG FIX] Read subfolder __pycache__'
   },
 
   // === Build commands - MUST be ALLOWED ===
